@@ -21,11 +21,6 @@ export const fetchNotes = async (): Promise<{
   notes: Note[];
   totalPages: number;
 }> => {
-  try {
-    const response = await axios.get<NotesHttpResponse>("notes", options);
-    return { notes: response.data.notes, totalPages: response.data.totalPages };
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  const response = await axios.get<NotesHttpResponse>("notes", options);
+  return { notes: response.data.notes, totalPages: response.data.totalPages };
 };
