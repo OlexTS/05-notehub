@@ -17,10 +17,10 @@ export interface NotesHttpResponse {
   totalPages: number;
 }
 
-export const fetchNotes = async (): Promise<{
+export const fetchNotes = async (page: number): Promise<{
   notes: Note[];
   totalPages: number;
 }> => {
-  const response = await axios.get<NotesHttpResponse>("notes", options);
+  const response = await axios.get<NotesHttpResponse>(`notes?page=${page}&perPage=12`, options);
   return { notes: response.data.notes, totalPages: response.data.totalPages };
 };
