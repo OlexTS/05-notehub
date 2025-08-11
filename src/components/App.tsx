@@ -12,7 +12,7 @@ function App() {
     queryKey: ["notes"],
     queryFn: () => fetchNotes(),
   });
-  console.log(data);
+  
   
   useEffect(() => {
     if (data && data.notes.length === 0) {
@@ -21,12 +21,13 @@ function App() {
   }, [data]);
   const notes = data?.notes ?? [];
 
+
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
         {/* Компонент SearchBox */}
         {/* Пагінація */}
-        {/* Кнопка створення нотатки */}
+        {<button className={css.button}>Create note +</button>}
       </header>
       <NoteList notes={notes} />
       <Toaster />
