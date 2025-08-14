@@ -5,7 +5,8 @@ import css from "./App.module.css";
 import NoteList from "./NoteList/NoteList";
 import { fetchNotes } from "../services/noteService";
 import Pagination from "./Pagination/Pagination";
-import Modal from "./Pagination/Modal/Modal";
+import Modal from "./Modal/Modal";
+import NoteForm from "./NoteForm/NoteForm";
 
 function App() {
   const [page, setPage] = useState<number>(1);
@@ -29,6 +30,10 @@ const handleModalOpen = () =>{
   setIsOpenModal(true)
 }
 
+const handleModalClose = () =>{
+  setIsOpenModal(false)
+}
+
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
@@ -38,7 +43,7 @@ const handleModalOpen = () =>{
         )}
         {<button className={css.button} onClick={handleModalOpen}>Create note +</button>}
       </header>
-      {isOpenModal && <Modal/>}
+      {isOpenModal && <Modal><NoteForm onClose={handleModalClose}/></Modal>}
       {isLoading && "Loading..."}
       {isError ? (
         toast.error("Something went wrong, please try again!")
