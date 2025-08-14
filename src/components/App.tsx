@@ -43,7 +43,7 @@ const handleModalClose = () =>{
         )}
         {<button className={css.button} onClick={handleModalOpen}>Create note +</button>}
       </header>
-      {isOpenModal && <Modal><NoteForm onClose={handleModalClose}/></Modal>}
+      {isOpenModal && <Modal onClose={handleModalClose}><NoteForm onClose={handleModalClose}/></Modal>}
       {isLoading && "Loading..."}
       {isError ? (
         toast.error("Something went wrong, please try again!")
