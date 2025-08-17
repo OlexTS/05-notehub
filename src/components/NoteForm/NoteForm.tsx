@@ -1,12 +1,15 @@
 import { Field, Form, Formik } from "formik";
 import css from "./NoteForm.module.css";
 import type { Values } from "../../types/note";
+import { noteSchema } from "../../helpers/validation";
 
 const initialValues: Values = {
   title: "",
   content: "",
   tag: "",
 };
+
+
 
 interface NoteFormProps {
   onClose: () => void;
@@ -16,7 +19,7 @@ interface NoteFormProps {
 
 const NoteForm = ({ onClose, onSubmit, isPending }: NoteFormProps) => {
   return (
-    <Formik initialValues={initialValues} onSubmit={onSubmit}>
+    <Formik initialValues={initialValues} validationSchema={noteSchema} onSubmit={onSubmit}>
       <Form className={css.form}>
         <div className={css.formGroup}>
           <label htmlFor="title">Title</label>
