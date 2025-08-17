@@ -7,6 +7,7 @@ import { createNote, fetchNotes } from "../services/noteService";
 import Pagination from "./Pagination/Pagination";
 import Modal from "./Modal/Modal";
 import NoteForm from "./NoteForm/NoteForm";
+import type { Note, Values } from "../types/note";
 
 function App() {
   const [page, setPage] = useState<number>(1);
@@ -19,7 +20,7 @@ function App() {
     placeholderData: keepPreviousData,
   });
 
-  const {mutate, isPending}=useMutation({
+  const {mutate, isPending}=useMutation<Note, Error, Values, unknown>({
     mutationFn: createNote,
     onSuccess: ()=>{
       queryClient.invalidateQueries({queryKey: ['notes']});
