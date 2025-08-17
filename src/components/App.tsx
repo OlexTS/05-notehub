@@ -1,22 +1,35 @@
 import { useEffect, useState } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData,  useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast, { Toaster } from "react-hot-toast";
 import css from "./App.module.css";
 import NoteList from "./NoteList/NoteList";
-import { fetchNotes } from "../services/noteService";
+import { createNote, fetchNotes } from "../services/noteService";
 import Pagination from "./Pagination/Pagination";
 import Modal from "./Modal/Modal";
 import NoteForm from "./NoteForm/NoteForm";
 
 function App() {
   const [page, setPage] = useState<number>(1);
-  const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const queryClient = useQueryClient()
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["notes", page],
     queryFn: () => fetchNotes(page),
     placeholderData: keepPreviousData,
   });
+
+  const {mutate, isPending}=useMutation({
+    mutationFn: createNote,
+    onSuccess: ()=>{
+      queryClient.invalidateQueries({queryKey: ['notes']});
+      setIsOpenModal(false);
+      toast.success("Note created successfully!")
+    },
+onError: ()=>{
+  toast.error("Failed to create note. Please try again.")
+}
+  })
 
   useEffect(() => {
     if (data && data.notes.length === 0) {
@@ -43,7 +56,7 @@ const handleModalClose = () =>{
         )}
         {<button className={css.button} onClick={handleModalOpen}>Create note +</button>}
       </header>
-      {isOpenModal && <Modal onClose={handleModalClose}><NoteForm onClose={handleModalClose}/></Modal>}
+      {isOpenModal && <Modal onClose={handleModalClose}><NoteForm onClose={handleModalClose} onSubmit={mutate} isPending={isPending}/></Modal>}
       {isLoading && "Loading..."}
       {isError ? (
         toast.error("Something went wrong, please try again!")

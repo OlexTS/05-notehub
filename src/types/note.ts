@@ -1,5 +1,5 @@
 export interface Note {
-  id: number;
+  // id: number;
   title: string;
   content: string;
   // createdAt: string;
@@ -8,6 +8,7 @@ export interface Note {
 }
 
 export interface Values {
+  
   title: string,
   content: string,
   tag: string
