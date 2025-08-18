@@ -36,6 +36,13 @@ export const createNote = async (note: Values): Promise<Note> => {
 };
 
 export const deleteNote = async (id: number): Promise<Note> => {
-const response = await noteHubApi.delete(`notes/${id}`);
-return response.data
-}
+  const response = await noteHubApi.delete(`notes/${id}`);
+  return response.data;
+};
+
+export const searchNotesByQuery = async (
+  query: string
+): Promise<{ notes: Note[]; totalPages: number }> => {
+  const response = await noteHubApi.get(`notes?search=${query}`);
+  return { notes: response.data.notes, totalPages: response.data.totalPages };
+};

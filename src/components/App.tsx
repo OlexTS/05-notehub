@@ -8,20 +8,27 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import css from "./App.module.css";
 import NoteList from "./NoteList/NoteList";
-import { createNote, deleteNote, fetchNotes } from "../services/noteService";
+import { createNote, deleteNote, fetchNotes, searchNotesByQuery } from "../services/noteService";
 import Pagination from "./Pagination/Pagination";
 import Modal from "./Modal/Modal";
 import NoteForm from "./NoteForm/NoteForm";
 import type { Note, Values } from "../types/note";
+import SearchBox from "./SearchBox/SearchBox";
 
 function App() {
   const [page, setPage] = useState<number>(1);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('')
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["notes", page],
-    queryFn: () => fetchNotes(page),
+    queryKey: ["notes", page, searchQuery],
+    queryFn: () => {
+      if(searchQuery){
+        return searchNotesByQuery(searchQuery)
+      }
+      return fetchNotes(page)
+    },
     placeholderData: keepPreviousData,
   });
 
@@ -57,6 +64,7 @@ const handleDelete = (id: number)=>{
   deleteMutation(id)
 } 
 
+
   useEffect(() => {
     if (data && data.notes.length === 0) {
       toast.error("No notes found for your request");
@@ -73,10 +81,15 @@ const handleDelete = (id: number)=>{
     setIsOpenModal(false);
   };
 
+const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
+  setSearchQuery(e.target.value)
+  setPage(1)
+} 
+
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        {/* Компонент SearchBox */}
+        {<SearchBox onChange={handleSearchChange} value={searchQuery}/>}
         {totalPages > 1 && (
           <Pagination totalPages={totalPages} page={page} setPage={setPage} />
         )}

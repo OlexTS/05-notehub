@@ -3,13 +3,12 @@ import css from "./NoteList.module.css";
 
 interface NotesListProps {
   notes: Note[];
-  onDelete: (id: number)=>void;
-  isDeleting: boolean
+  onDelete: (id: number) => void;
+  isDeleting: boolean;
 }
 
 const NoteList = ({ notes, onDelete, isDeleting }: NotesListProps) => {
   return (
-    
     <ul className={css.list}>
       {notes.map((note) => (
         <li key={note.id} className={css.listItem}>
@@ -17,7 +16,9 @@ const NoteList = ({ notes, onDelete, isDeleting }: NotesListProps) => {
           <p className={css.content}>{note.content}</p>
           <div className={css.footer}>
             <span className={css.tag}>{note.tag}</span>
-            <button className={css.button} onClick={()=>onDelete(note.id)}>{isDeleting?'Deleting...': 'Delete'}</button>
+            <button className={css.button} onClick={() => onDelete(note.id)}>
+              {isDeleting ? "Deleting..." : "Delete"}
+            </button>
           </div>
         </li>
       ))}
