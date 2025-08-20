@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
+import { useDebounce } from 'use-debounce';
 import {
   keepPreviousData,
   useMutation,
@@ -8,7 +9,12 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import css from "./App.module.css";
 import NoteList from "./NoteList/NoteList";
-import { createNote, deleteNote, fetchNotes, searchNotesByQuery } from "../services/noteService";
+import {
+  createNote,
+  deleteNote,
+  fetchNotes,
+  searchNotesByQuery,
+} from "../services/noteService";
 import Pagination from "./Pagination/Pagination";
 import Modal from "./Modal/Modal";
 import NoteForm from "./NoteForm/NoteForm";
@@ -18,16 +24,22 @@ import SearchBox from "./SearchBox/SearchBox";
 function App() {
   const [page, setPage] = useState<number>(1);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  // const [notes, setNotes] = useState<Note[]>([]);
+  // const [totalPages, setTotalPages] = useState<number>(0);
   const queryClient = useQueryClient();
 
+
+  const [debounceQuery] = useDebounce(searchQuery, 1000)
+ 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["notes", page, searchQuery],
+    queryKey: ["notes", page, debounceQuery],
     queryFn: () => {
-      if(searchQuery){
-        return searchNotesByQuery(searchQuery)
+      if (debounceQuery) {
+            
+        return searchNotesByQuery(debounceQuery, page);
       }
-      return fetchNotes(page)
+      return fetchNotes(page);
     },
     placeholderData: keepPreviousData,
   });
@@ -60,18 +72,21 @@ function App() {
     },
   });
 
-const handleDelete = (id: number)=>{
-  deleteMutation(id)
-} 
+  const handleDelete = (id: number) => {
+    deleteMutation(id);
+  };
 
-
-  useEffect(() => {
-    if (data && data.notes.length === 0) {
-      toast.error("No notes found for your request");
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     setNotes(data.notes);
+  //     setTotalPages(data.totalPages);
+  //     if (data && data.notes.length === 0) {
+  //       toast.error("No notes found for your request");
+  //     }
+  //   }
+  // }, [data]);
   const notes = data?.notes ?? [];
-  const totalPages = data?.totalPages ?? 0;
+ const totalPages = data?.totalPages ?? 0;
 
   const handleModalOpen = () => {
     setIsOpenModal(true);
@@ -81,15 +96,14 @@ const handleDelete = (id: number)=>{
     setIsOpenModal(false);
   };
 
-const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
-  setSearchQuery(e.target.value)
-  setPage(1)
-} 
-
+  const handleSearchChange =  (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setPage(1);
+  }
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        {<SearchBox onChange={handleSearchChange} value={searchQuery}/>}
+        {<SearchBox onChange={handleSearchChange} value={searchQuery} />}
         {totalPages > 1 && (
           <Pagination totalPages={totalPages} page={page} setPage={setPage} />
         )}
@@ -112,7 +126,11 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
       {isError ? (
         toast.error("Something went wrong, please try again!")
       ) : (
-        <NoteList notes={notes} onDelete={handleDelete} isDeleting={isDeleting}/>
+        <NoteList
+          notes={notes}
+          onDelete={handleDelete}
+          isDeleting={isDeleting}
+        />
       )}
       <Toaster />
     </div>

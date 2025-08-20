@@ -41,8 +41,9 @@ export const deleteNote = async (id: number): Promise<Note> => {
 };
 
 export const searchNotesByQuery = async (
-  query: string
+  query: string,
+  page: number
 ): Promise<{ notes: Note[]; totalPages: number }> => {
-  const response = await noteHubApi.get(`notes?search=${query}`);
+  const response = await noteHubApi.get(`notes?search=${query}&page=${page}&perPage=12`);
   return { notes: response.data.notes, totalPages: response.data.totalPages };
 };
